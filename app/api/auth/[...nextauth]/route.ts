@@ -1,3 +1,4 @@
+import { prismaClient } from "@/app/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -8,7 +9,10 @@ const CreateStreamSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const data = CreateStreamSchema.safeParse(await req.json());
+    const data = CreateStreamSchema.parse(await req.json());
+    prismaClient.stream.create({
+      userId: data.creatorId,
+    });
   } catch (error) {}
   return NextResponse.json(
     {
