@@ -13,6 +13,21 @@ const CreateStreamSchema = z.object({
 export async function Post(req: NextRequest) {
   try {
     const data = CreateStreamSchema.parse(await req.json());
+    const isYt = YT_REGEX.test(data.url);
+
+    if (!isYt) {
+      return NextResponse.json(
+        {
+          message: "wrong url format",
+        },
+        {
+          status: 411,
+        }
+      );
+    }
+
+    const extractedId = data.url.split("?v=")[1];
+
     prismaClient.stream.create({
       userId: data.creatorId,
       url: data.url,
