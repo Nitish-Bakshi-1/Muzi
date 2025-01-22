@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@prisma/client": "^6.2.1",
     "next": "15.1.5",
     "next-auth": "^4.24.11",
     "prisma": "^6.2.1",
