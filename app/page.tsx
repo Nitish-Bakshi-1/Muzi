@@ -3,12 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Music, Users, Zap } from "lucide-react";
 import { Appbar } from "./components/Appbar";
+import { Redirect } from "./components/Redirect";
 
 export default function LandingPage() {
   return (
     <div className="overflow-hidden flex items-center flex-col min-h-screen bg-gradient-to-b from-purple-100 to-indigo-100 dark:from-gray-900 dark:to-indigo-950">
       <header className="w-full   px-4 lg:px-6 h-16 flex items-center py-10 border-b bg-white/80 backdrop-blur-sm dark:bg-gray-800/80">
         <Appbar />
+        <Redirect />
       </header>
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">

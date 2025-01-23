@@ -12,4 +12,5 @@ export function Redirect() {
       Router.push("/dashboard");
     }
   }, [session]);
+  return null;
 }
