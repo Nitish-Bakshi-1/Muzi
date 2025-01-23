@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prismaClient } from "@/app/lib/db";
+import { StreamType } from "@prisma/client";
 //@ts-ignore
 import youtubesearchapi from "youtube-search-api";
-const YT_REGEX = new RegExp(
-  "^https://www\\.youtube\\.com/watch\\?v=[\\w-]+(&[\\w-]+=?[^\\s]*)*$"
-);
+const YT_REGEX = /^https:\/\/www\.youtube\.com\/watch\?v=([\w-]+)/;
 
 const CreateStreamSchema = z.object({
   creatorId: z.string(),
@@ -31,14 +30,26 @@ export async function POST(req: NextRequest) {
     const extractedId = data.url.split("?v=")[1];
 
     const res = await youtubesearchapi.GetVideoDetails(extractedId);
-    console.log(JSON.stringify(res.thumbnail.thumbnails));
+    const thumbnails = res.thumbnail.thumbnails;
+    thumbnails.sort((a: { width: number }, b: { width: number }) =>
+      a.width < b.width ? -1 : 1
+    );
 
     const stream = await prismaClient.stream.create({
       data: {
         userId: data.creatorId,
         url: data.url,
         extractedId,
-        type: "Youtube",
+        type: StreamType.Youtube,
+        title: res.title || "Can't find title",
+        smallImg:
+          (thumbnails.length > 1
+            ? thumbnails[thumbnails.length - 2].url
+            : thumbnails[thumbnails.length - 1].url) ??
+          "https://imgs.search.brave.com/H33fyJx1QOnjxRQoJV0Huk4BuUamVu4vMzQP7tMdmM8/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJjYXZlLmNv/bS93cC93cDI3NDAy/OTgucG5n",
+        bigImg:
+          thumbnails[thumbnails.length - 1].url ??
+          "https://imgs.search.brave.com/H33fyJx1QOnjxRQoJV0Huk4BuUamVu4vMzQP7tMdmM8/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJjYXZlLmNv/bS93cC93cDI3NDAy/OTgucG5n",
       },
     });
 
@@ -47,6 +58,11 @@ export async function POST(req: NextRequest) {
       id: stream.id,
     });
   } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    } else {
+      console.error("An unknown error occurred");
+    }
     return NextResponse.json(
       {
         message: "error while adding a stream",
