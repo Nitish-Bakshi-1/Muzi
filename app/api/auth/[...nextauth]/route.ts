@@ -14,6 +14,7 @@ const handler = NextAuth({
   callbacks: {
     async signIn(params) {
       try {
+        console.log(params.user.email);
         if (params.user.email) {
           await prismaClient.user.create({
             data: {
@@ -21,8 +22,6 @@ const handler = NextAuth({
               provider: "Google",
             },
           });
-        } else {
-          return false;
         }
       } catch (e) {
         console.log(e);
