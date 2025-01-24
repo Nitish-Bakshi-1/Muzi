@@ -4,7 +4,15 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowUpCircle, ArrowDownCircle, Play, Plus } from "lucide-react";
+import {
+  ArrowUpCircle,
+  ArrowDownCircle,
+  Play,
+  Plus,
+  Share2,
+} from "lucide-react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface Video {
   id: string;
@@ -12,7 +20,7 @@ interface Video {
   votes: number;
 }
 
-export default function dashboard() {
+export default function YouTubeVotingQueue() {
   const [videos, setVideos] = useState<Video[]>([
     {
       id: "dQw4w9WgXcQ",
@@ -57,6 +65,9 @@ export default function dashboard() {
       ]);
       setNewVideoUrl("");
       setPreviewVideoId("");
+      toast.success("Video added successfully!");
+    } else {
+      toast.error("Invalid YouTube URL");
     }
   };
 
@@ -75,12 +86,55 @@ export default function dashboard() {
     }
   };
 
+  const handleShare = async () => {
+    const shareData = {
+      title: "YouTube Voting Queue",
+      text: "Join my YouTube Voting Queue!",
+      url: window.location.href,
+    };
+
+    if (navigator.share && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+        toast.success("Shared successfully!");
+      } catch (error) {
+        console.error("Error sharing:", error);
+        toast.error("Error sharing");
+      }
+    } else {
+      navigator.clipboard
+        .writeText(window.location.href)
+        .then(() => {
+          toast.success("Link copied to clipboard!");
+        })
+        .catch((error) => {
+          console.error("Error copying link:", error);
+          toast.error("Error copying link");
+        });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 py-8">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <div className="container mx-auto px-4">
-        <h1 className="text-3xl font-bold text-center mb-8">
-          YouTube Voting Queue
-        </h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">YouTube Voting Queue</h1>
+          <Button onClick={handleShare} className="flex items-center gap-2">
+            <Share2 className="h-4 w-4" />
+            Share
+          </Button>
+        </div>
 
         <div className="grid md:grid-cols-1 gap-8">
           <Card>
