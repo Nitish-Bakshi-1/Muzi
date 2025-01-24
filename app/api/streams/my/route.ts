@@ -10,8 +10,9 @@ export async function GET(req: NextRequest) {
       email: session?.user?.email ?? "",
     },
   });
+
   if (!user) {
-    NextResponse.json(
+    return NextResponse.json(
       {
         message: "Unauthenticated",
       },
@@ -19,5 +20,25 @@ export async function GET(req: NextRequest) {
         status: 403,
       }
     );
+  } else {
+    const streams = await prismaClient.stream.findMany({
+      where: {
+        userId: user.id,
+      },
+      include: {
+        _count: {
+          select: {
+            upvotes: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json({
+      streams: streams.map(({ _count, ...rest }) => ({
+        ...rest,
+        upvotes: _count.upvotes,
+      })),
+    });
   }
 }

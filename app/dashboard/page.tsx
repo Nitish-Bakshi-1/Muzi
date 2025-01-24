@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
 interface Video {
   id: string;
@@ -34,9 +35,22 @@ export default function YouTubeVotingQueue() {
       votes: 2,
     },
   ]);
+
+  const REFRESH_INTERVAL_MS = 10 * 1000;
+
   const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
   const [newVideoUrl, setNewVideoUrl] = useState("");
   const [previewVideoId, setPreviewVideoId] = useState("");
+
+  async function refreshStreams() {
+    const res = await axios.get("/api/streams/my");
+    console.log(res);
+  }
+
+  useEffect(() => {
+    refreshStreams();
+    const interval = setInterval(() => {}, REFRESH_INTERVAL_MS);
+  }, []);
 
   useEffect(() => {
     if (!currentVideo && videos.length > 0) {
