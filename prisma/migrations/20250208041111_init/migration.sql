@@ -19,6 +19,9 @@ CREATE TABLE "Stream" (
     "type" "StreamType" NOT NULL,
     "active" BOOLEAN NOT NULL DEFAULT true,
     "url" TEXT NOT NULL,
+    "title" TEXT NOT NULL DEFAULT '',
+    "smallImg" TEXT NOT NULL DEFAULT '',
+    "bigImg" TEXT NOT NULL DEFAULT '',
     "extractedId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
 
@@ -33,6 +36,9 @@ CREATE TABLE "Upvote" (
 
     CONSTRAINT "Upvote_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Upvote_userId_streamId_key" ON "Upvote"("userId", "streamId");

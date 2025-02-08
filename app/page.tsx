@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
 import { ArrowRight, Music, Users, Zap } from "lucide-react";
 import { Appbar } from "./components/Appbar";
 import { Redirect } from "./components/Redirect";
